@@ -9,12 +9,16 @@ const Dashboard = () => {
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user:detail"))
   );
+
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState({});
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
   const [socket, setSocket] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [onlineUsersId, setOnlineUsersId] = useState([]);
+  const [typingStatus, setTypingStatus] = useState({});
+
   const messageRef = useRef(null);
   let fileInputRef = null;
 
@@ -29,8 +33,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     socket?.emit("addUser", user?.id);
-    socket?.on("getUsers", (users) => {
-      console.log("activeUsers :>> ", users);
+
+    socket?.on("getOnlineUsers", (users) => {
+      setOnlineUsersId(users.map((user) => user._id));
+    });
+
+    socket?.on("typingStatus", ({ senderId, isTyping }) => {
+      setTypingStatus((prevStatus) => ({
+        ...prevStatus,
+        [senderId]: isTyping,
+      }));
     });
 
     socket?.on("getMessage", (data) => {
@@ -146,7 +158,6 @@ const Dashboard = () => {
       });
 
       if (selectedFile) {
-        console.log(selectedFile, "selectedFile");
         socket?.emit("sendMessage", {
           senderId: user?.id,
           message: message,
@@ -156,8 +167,8 @@ const Dashboard = () => {
           fileName: selectedFile.name,
           fileType: selectedFile.type,
         });
+        setTypingStatus({});
       } else {
-        console.log("I AM HERE");
         socket?.emit("sendMessage", {
           senderId: user?.id,
           message: message,
@@ -167,14 +178,35 @@ const Dashboard = () => {
           fileName: null,
           fileType: null,
         });
+        setTypingStatus({});
       }
-
-      console.log("Message sent");
 
       setSelectedFile(null);
     } catch (error) {
       console.error("Error uploading file:", error);
     }
+  };
+
+  const handleMessageChange = (e) => {
+    setMessage(e.target.value);
+    const isTyping = e.target.value !== "";
+    socket?.emit("typing", {
+      senderId: user?.id,
+      receiverId: messages?.receiver?.receiverId,
+      isTyping,
+    });
+    if (!isTyping) {
+      setTypingStatus({});
+    } 
+  };
+
+  const stopTyping = () => {
+    socket?.emit("typing", {
+      senderId: user?.id,
+      receiverId: messages?.receiver?.receiverId,
+      isTyping: false,
+    });
+    setTypingStatus({});
   };
 
   return (
@@ -208,16 +240,25 @@ const Dashboard = () => {
             {conversations.length > 0 ? (
               conversations.map(({ conversationId, user }) => {
                 return (
-                  <div className="flex items-center py-8 border-b border-b-gray-300">
+                  <div
+                    className="flex items-center py-8 border-b border-b-gray-300"
+                    key={conversationId}
+                  >
                     <div
                       className="cursor-pointer flex items-center"
                       onClick={() => fetchMessages(conversationId, user)}
                     >
-                      <div>
+                      <div className="relative">
                         <img
                           src={Img1}
                           className="w-[60px] h-[60px] rounded-full p-[2px] border border-primary"
                         />
+                        {user && onlineUsersId.includes(user.receiverId) && (
+                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></div>
+                        )}
+                        {user && !onlineUsersId.includes(user.receiverId) && (
+                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 rounded-full"></div>
+                        )}
                       </div>
                       <div className="ml-6">
                         <h3 className="text-lg font-semibold">
@@ -304,7 +345,7 @@ const Dashboard = () => {
                               e.target.onerror = null;
                               setTimeout(() => {
                                 e.target.src = msg.fileUrl;
-                              }, 1000); // Retry after 1 second
+                              }, 1000);
                             }}
                           />
                         </>
@@ -328,10 +369,16 @@ const Dashboard = () => {
         </div>
         {messages?.receiver?.fullName && (
           <div className="p-14 w-full flex items-center">
+            {typingStatus[messages?.receiver?.receiverId] && (
+              <div className="ml-4 text-sm text-gray-500">
+                {messages?.receiver?.fullName} is typing...
+              </div>
+            )}
             <Input
               placeholder="Type a message..."
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleMessageChange}
+              onBlur={stopTyping}
               className="w-[75%]"
               inputClassName="p-4 border-0 shadow-md rounded-full bg-light focus:ring-0 focus:border-0 outline-none"
             />
@@ -398,16 +445,25 @@ const Dashboard = () => {
           {users.length > 0 ? (
             users.map(({ userId, user }) => {
               return (
-                <div className="flex items-center py-8 border-b border-b-gray-300">
+                <div
+                  className="flex items-center py-8 border-b border-b-gray-300"
+                  key={userId}
+                >
                   <div
                     className="cursor-pointer flex items-center"
                     onClick={() => fetchMessages("new", user)}
                   >
-                    <div>
+                    <div className="relative">
                       <img
                         src={Img1}
                         className="w-[60px] h-[60px] rounded-full p-[2px] border border-primary"
                       />
+                      {onlineUsersId.includes(user?.receiverId) && (
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></div>
+                      )}
+                      {!onlineUsersId.includes(user?.receiverId) && (
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 rounded-full"></div>
+                      )}
                     </div>
                     <div className="ml-6">
                       <h3 className="text-lg font-semibold">
