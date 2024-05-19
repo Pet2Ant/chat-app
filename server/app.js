@@ -212,6 +212,7 @@ io.on("connection", (socket) => {
 });
 // Validation schemas
 const registerSchema = Joi.object({
+  fullName: Joi.string().min(6).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
 });
@@ -613,13 +614,201 @@ app.get("/api/message/:conversationId", authenticateUser, async (req, res) => {
               message.fileUrl,
               ".enc"
             )}`;
-            fs.writeFileSync(
-              path.join(__dirname, "uploads", decryptedFilename),
-              decryptedFileData
-            );
-            decryptedFileUrl = `${req.protocol}://${req.get(
-              "host"
-            )}/uploads/${decryptedFilename}`;
+
+            console.log(message.fileType + "Gfdgsfdsfdgdsgsfd")
+
+            const fileExtension = message.fileType.split("/")[1];
+
+            console.log(fileExtension + "Gfdgsfdsfdgdsgsfd")
+
+            if (fileExtension === "pdf") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".pdf"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.pdf`;
+            } else if (fileExtension === "png") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".png"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.png`;
+            } else if (fileExtension === "jpeg") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".jpeg"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.jpeg`;
+            }
+            else if (fileExtension === "jpg") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".jpg"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.jpg`;
+            }
+            else if (fileExtension === "docx") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".docx"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.docx`;
+            }
+            else if (fileExtension === "txt") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".txt"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.txt`;
+            }
+            else if (fileExtension === "xlsx") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".xlsx"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.xlsx`;
+            }
+            else if (fileExtension === "pptx") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".pptx"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.pptx`;
+            }
+            else if (fileExtension === "mp4") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".mp4"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.mp4`;
+            }
+            else if (fileExtension === "mp3") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".mp3"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.mp3`;
+            }
+            else if (fileExtension === "wav") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".wav"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.wav`;
+            }
+            else if (fileExtension === "zip") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".zip"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.zip`;
+            }
+            else if (fileExtension === "rar") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".rar"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.rar`;
+            }
+            else if (fileExtension === "7z") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".7z"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.7z`;
+            }
+            else if (fileExtension === "ppt") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".ppt"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.ppt`;
+            }
+            else if (fileExtension === "xls") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".xls"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.xls`;
+            }
+            else if (fileExtension === "doc") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".doc"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.doc`;
+            }
+            else if (fileExtension === "csv") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".csv"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.csv`;
+            }
+            else if (fileExtension === "json") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".json"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.json`;
+            }
+            else if (fileExtension === "xml") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".xml"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.xml`;
+            }
+            else if (fileExtension === "x-msdownload") {
+              fs.writeFileSync(
+                path.join(__dirname, "uploads", decryptedFilename + ".exe"),
+                decryptedFileData
+              );
+              decryptedFileUrl = `${req.protocol}://${req.get(
+                "host"
+              )}/uploads/${decryptedFilename}.exe`;
+            }
+            
           }
 
           logger.info("GET /api/message/:conversationId - Message decrypted", {

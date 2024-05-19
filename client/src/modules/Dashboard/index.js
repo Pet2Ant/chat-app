@@ -135,6 +135,7 @@ const Dashboard = () => {
     );
     const resData = await res.json();
     setMessages({ messages: resData, receiver, conversationId });
+
   };
 
   const sendMessage = async (e) => {
@@ -166,6 +167,7 @@ const Dashboard = () => {
           fileType: selectedFile.type,
         });
         setTypingStatus({});
+        
       } else {
         socket?.emit("sendMessage", {
           senderId: user?.id,
@@ -177,9 +179,10 @@ const Dashboard = () => {
           fileType: null,
         });
         setTypingStatus({});
-      }
+        setSelectedFile(null);
+        window.location.reload();
 
-      setSelectedFile(null);
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
     }
@@ -405,13 +408,13 @@ const Dashboard = () => {
             </div>
             <input
               type="file"
+              className="hidden"
               onChange={(e) => setSelectedFile(e.target.files[0])}
               ref={(input) => (fileInputRef = input)}
             />
             <div
               id="addFile"
-              className={`ml-4 p-2 cursor-pointer bg-light rounded-full ${
-                !message && "pointer-events-none"
+              className={`ml-4 p-2 cursor-pointer bg-light rounded-full
               }`}
               onClick={() => fileInputRef.click()}
             >
