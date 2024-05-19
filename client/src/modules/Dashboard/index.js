@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import Input from "../../components/Input";
 import { io } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user:detail"))
   );
@@ -120,7 +122,7 @@ const Dashboard = () => {
 
     // redirect to login page
 
-    window.location.href = "/users/sign_in";
+    navigate("/users/sign_in");
   };
 
   const fetchMessages = async (conversationId, receiver) => {
@@ -135,7 +137,6 @@ const Dashboard = () => {
     );
     const resData = await res.json();
     setMessages({ messages: resData, receiver, conversationId });
-
   };
 
   const sendMessage = async (e) => {
@@ -167,7 +168,6 @@ const Dashboard = () => {
           fileType: selectedFile.type,
         });
         setTypingStatus({});
-        
       } else {
         socket?.emit("sendMessage", {
           senderId: user?.id,
@@ -180,8 +180,9 @@ const Dashboard = () => {
         });
         setTypingStatus({});
         setSelectedFile(null);
-        window.location.reload();
-
+        if (messages?.conversationId === "new") {
+          window.location.reload();
+        }
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -198,7 +199,7 @@ const Dashboard = () => {
     });
     if (!isTyping) {
       setTypingStatus({});
-    } 
+    }
   };
 
   const stopTyping = () => {
@@ -285,8 +286,14 @@ const Dashboard = () => {
         {messages?.receiver?.fullName && (
           <div className="w-[75%] bg-secondary h-[80px] my-14 rounded-full flex items-center px-14 py-2">
             <div className="cursor-pointer">
-              <img src={"https://ui-avatars.com/api/" + messages?.receiver?.fullName}
-                 width={60} height={60} className="rounded-full" />
+              <img
+                src={
+                  "https://ui-avatars.com/api/" + messages?.receiver?.fullName
+                }
+                width={60}
+                height={60}
+                className="rounded-full"
+              />
             </div>
             <div className="ml-6 mr-auto">
               <h3 className="text-lg">{messages?.receiver?.fullName}</h3>

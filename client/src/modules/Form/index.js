@@ -17,7 +17,6 @@ const Form = ({
     const navigate = useNavigate()
 
     const handleSubmit = async(e) => {
-        console.log('data :>> ', data);
         e.preventDefault()
         const res = await fetch(`https://localhost:8000/api/${isSignInPage ? 'login' : 'register'}`, {
             method: 'POST',
